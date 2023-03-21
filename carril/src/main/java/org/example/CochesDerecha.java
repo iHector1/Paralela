@@ -11,17 +11,18 @@ public class CochesDerecha extends Thread {
         while(true){
             while (this.calle.isCochesDerecha() == true && this.calle.getContadorCochesDerecha()>0){
                 this.calle.cochesPasadosDerecha();
-                System.out.println("El choche que transita de Derecha a izquierda "+this.calle.getContadorCochesDerecha());
+                System.out.println("<- El coche izquierdo va a la derecha, quedan  "+this.calle.getContadorCochesDerecha());
                 try{
                     sleep(2500);
                 }catch (InterruptedException e){
 
                 }
+
                 if(this.calle.isCochesDerecha()==false&& this.calle.getContadorCochesDerecha()<=0){
                     while(this.calle.isCochesDerecha()==false){
                         try {
                             sleep(500);
-                            this.calle.insertarCocheDerecho();
+
                         }catch (InterruptedException e){
 
                         }

@@ -18,7 +18,5 @@ public class Main {
         }
         izquierdos.start();
         derecha.start();
-
-
     }
 }

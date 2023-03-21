@@ -2,6 +2,8 @@ package org.example;
 
 import java.util.Random;
 
+import static java.lang.Thread.sleep;
+
 public class Calle{
 
     private boolean cochesDerecha = false;
@@ -56,6 +58,13 @@ public class Calle{
             this.cochesIzquierda=false;
             this.cochesDerecha=true;
         }
+        Random r = new Random();
+        if(r.nextInt(2)+1==1){
+            this.insertarCocheDerecho();
+            try {
+                sleep(500);
+            } catch (InterruptedException e) { }
+        }
         notifyAll();
     }
 
@@ -65,17 +74,26 @@ public class Calle{
             this.cochesDerecha=false;
             this.cochesIzquierda=true;
         }
+        Random r = new Random();
+        if(r.nextInt(2)+1==1){
+            this.insertarCocheIzquierdo();
+            try {
+                sleep(500);
+            } catch (InterruptedException e) { }
+        }
         notifyAll();
     }
     public synchronized void insertarCocheDerecho(){
-        contadorCochesDerecha++;
-        System.out.println(this.contadorCochesDerecha+" estan estaciuonados de lado derecho");
+        Random r = new Random();
+        this.contadorCochesDerecha+=r.nextInt(2)+1;
+        System.out.println("++"+this.contadorCochesDerecha+" estan estacionados de lado derecho");
         notifyAll();
     }
 
     public synchronized void insertarCocheIzquierdo(){
-        this.contadorCochesIzquierda++;
-        System.out.println(this.contadorCochesIzquierda+" estan estacionados de lado izquierdo");
+        Random r = new Random();
+        this.contadorCochesIzquierda+=r.nextInt(2)+1;
+        System.out.println("**"+this.contadorCochesIzquierda+" estan estacionados de lado izquierdo");
         notifyAll();
     }
 }
