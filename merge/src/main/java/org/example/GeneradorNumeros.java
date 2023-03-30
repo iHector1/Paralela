@@ -2,6 +2,8 @@ package org.example;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.ForkJoinPool;
 import javax.swing.*;
 
 public class GeneradorNumeros extends JFrame implements ActionListener {
@@ -14,6 +16,13 @@ public class GeneradorNumeros extends JFrame implements ActionListener {
     private JTextArea txtNumerosInsertados;
     private JScrollPane scrollNumerosInsertados;
     private ArrayList<Integer> numeros;
+    private JLabel lblTiempo;
+    private JLabel lblTiempoFork;
+    private JLabel lblTiempoService;
+
+    private JButton btnMergeNumerosFork;
+
+    private JButton btnMergeNumerosService;
 
     public GeneradorNumeros() {
         //Inicializacion de la lista
@@ -40,33 +49,52 @@ public class GeneradorNumeros extends JFrame implements ActionListener {
         txtNumerosGenerados.setEditable(false);
         btnMergeNumeros = new JButton("Merge");
         btnMergeNumeros.addActionListener(this);
+        btnMergeNumerosFork = new JButton("Fork");
+        btnMergeNumerosFork.addActionListener(this);
+        btnMergeNumerosService = new JButton("Service");
+        btnMergeNumerosService.addActionListener(this);
         txtNumerosInsertados = new JTextArea();
         txtNumerosInsertados.setEditable(false);
         txtNumerosInsertados.setColumns(20);
         txtNumerosInsertados.setRows(5);
         scrollNumerosInsertados = new JScrollPane();
         scrollNumerosInsertados.setViewportView(txtNumerosInsertados);
-
+        //tiempo
+        lblTiempo = new JLabel("Tiempo : ");
+        lblTiempoFork = new JLabel("Tiempo Fork: ");
+        lblTiempoService = new JLabel("Tiempo Service: ");
 
         // Configuración del layout
         Container contentPane = getContentPane();
         contentPane.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
         contentPane.add(lblCantidadNumeros);
+
         contentPane.add(txtCantidadNumeros);
         contentPane.add(btnGenerarNumeros);
         contentPane.add(scrollNumerosGenerados);
         contentPane.add(btnMergeNumeros);
         contentPane.add(scrollNumerosInsertados);
+       contentPane.add(btnMergeNumerosFork);
+        contentPane.add(btnMergeNumerosService);
+        contentPane.add(lblTiempo);
+
 
         // Configuración de los bordes
         lblCantidadNumeros.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
         txtCantidadNumeros.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
         btnGenerarNumeros.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
         btnMergeNumeros.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
+        btnMergeNumerosFork.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
+        btnMergeNumerosService.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
+        lblTiempo.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
+        lblTiempoFork.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
+        lblTiempoService.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
+
     }
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnGenerarNumeros) {
+            numeros.clear();
             // Generar números aleatorios
             int cantidadNumeros = Integer.parseInt(txtCantidadNumeros.getText());
             StringBuilder numerosGenerados = new StringBuilder();
@@ -78,16 +106,34 @@ public class GeneradorNumeros extends JFrame implements ActionListener {
             txtNumerosGenerados.setText(numerosGenerados.toString());
 
         } else if (e.getSource() == btnMergeNumeros) {
+            long tiempo1 = System.currentTimeMillis();
             // Insertar números generados
-            String numerosGenerados = txtNumerosGenerados.getText();
             merge Merge = new merge();
-             ArrayList<Integer> resultado=Merge.merge(numeros);
+            ArrayList<Integer> resultado=Merge.merge(numeros);
             txtNumerosInsertados.setText("");
             for (int numero : resultado) {
                 txtNumerosInsertados.append(String.valueOf(numero) + ", ");
             }
-            System.out.println(numeros);
-            numeros.clear();
+            //System.out.println(numeros);
+            long tiempo2 = System.currentTimeMillis()-tiempo1;
+            lblTiempo.setText("Tiempo Merge: "+tiempo2+" milisegundos");
+
+        }else if (e.getSource() == btnMergeNumerosFork) {
+            int[] array = new int[this.numeros.size()];
+            for (int i = 0; i < this.numeros.size(); i++) {
+                array[i] = this.numeros.get(i);
+            }
+            long tiempo1 = System.currentTimeMillis();
+            Forkjoin forkjoin= new Forkjoin(array);
+            ForkJoinPool fork = new ForkJoinPool();
+            fork.invoke(forkjoin);
+            //fork.
+            txtNumerosInsertados.setText("");
+            txtNumerosInsertados.setText(Arrays.toString(array));
+
+            //System.out.println(numeros);
+            long tiempo2 = System.currentTimeMillis()-tiempo1;
+            lblTiempo.setText("Tiempo Fork: "+tiempo2+" milisegundos");
         }
     }
 

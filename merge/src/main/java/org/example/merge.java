@@ -1,6 +1,7 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.concurrent.RecursiveTask;
 
 public class merge {
     public ArrayList<Integer> merge(ArrayList<Integer> lista){
@@ -31,9 +32,11 @@ public class merge {
                 indiceDerecha++;
             }
         }
+        //se agregan los numeros de izquierda a derecha
         resultado.addAll(sublistaIzquierda.subList(indiceIzquierda, sublistaIzquierda.size()));
         resultado.addAll(sublistaDerecha.subList(indiceDerecha, sublistaDerecha.size()));
 
         return resultado;
     }
+
 }
