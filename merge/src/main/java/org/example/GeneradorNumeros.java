@@ -23,6 +23,8 @@ public class GeneradorNumeros extends JFrame implements ActionListener {
     private JButton btnMergeNumerosFork;
 
     private JButton btnMergeNumerosService;
+    private JButton btnLimpiar;
+
 
     public GeneradorNumeros() {
         //Inicializacion de la lista
@@ -45,7 +47,8 @@ public class GeneradorNumeros extends JFrame implements ActionListener {
 
         btnGenerarNumeros = new JButton("Generar números");
         btnGenerarNumeros.addActionListener(this);
-
+        btnLimpiar = new JButton("Limpiar");
+        btnLimpiar.addActionListener(this);
         txtNumerosGenerados.setEditable(false);
         btnMergeNumeros = new JButton("Merge");
         btnMergeNumeros.addActionListener(this);
@@ -59,6 +62,7 @@ public class GeneradorNumeros extends JFrame implements ActionListener {
         txtNumerosInsertados.setRows(5);
         scrollNumerosInsertados = new JScrollPane();
         scrollNumerosInsertados.setViewportView(txtNumerosInsertados);
+
         //tiempo
         lblTiempo = new JLabel("Tiempo : ");
         lblTiempoFork = new JLabel("Tiempo Fork: ");
@@ -69,6 +73,7 @@ public class GeneradorNumeros extends JFrame implements ActionListener {
         contentPane.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
         contentPane.add(lblCantidadNumeros);
 
+        //agregar al panel los componentes
         contentPane.add(txtCantidadNumeros);
         contentPane.add(btnGenerarNumeros);
         contentPane.add(scrollNumerosGenerados);
@@ -76,7 +81,11 @@ public class GeneradorNumeros extends JFrame implements ActionListener {
         contentPane.add(scrollNumerosInsertados);
        contentPane.add(btnMergeNumerosFork);
         contentPane.add(btnMergeNumerosService);
+        contentPane.add(btnLimpiar);
         contentPane.add(lblTiempo);
+        contentPane.add(lblTiempoFork);
+        contentPane.add(lblTiempoService);
+
 
 
         // Configuración de los bordes
@@ -89,52 +98,76 @@ public class GeneradorNumeros extends JFrame implements ActionListener {
         lblTiempo.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
         lblTiempoFork.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
         lblTiempoService.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
+        btnLimpiar.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
 
+    }
+
+    private void limpiar(){
+        this.txtNumerosGenerados.setText("");
+        this.txtCantidadNumeros.setText("");
+        this.txtNumerosInsertados.setText("");
     }
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnGenerarNumeros) {
-            numeros.clear();
-            // Generar números aleatorios
-            int cantidadNumeros = Integer.parseInt(txtCantidadNumeros.getText());
-            StringBuilder numerosGenerados = new StringBuilder();
-            for (int i = 0; i < cantidadNumeros; i++) {
-                int numero = (int) (Math.random() * 100) + 1;
-                numerosGenerados.append(numero + ", ");
-                numeros.add(numero);
-            }
-            txtNumerosGenerados.setText(numerosGenerados.toString());
+            this.generarNumeros();
 
         } else if (e.getSource() == btnMergeNumeros) {
-            long tiempo1 = System.currentTimeMillis();
-            // Insertar números generados
-            merge Merge = new merge();
-            ArrayList<Integer> resultado=Merge.merge(numeros);
-            txtNumerosInsertados.setText("");
-            for (int numero : resultado) {
-                txtNumerosInsertados.append(String.valueOf(numero) + ", ");
-            }
-            //System.out.println(numeros);
-            long tiempo2 = System.currentTimeMillis()-tiempo1;
-            lblTiempo.setText("Tiempo Merge: "+tiempo2+" milisegundos");
+            this.buttonMerge();
 
         }else if (e.getSource() == btnMergeNumerosFork) {
-            int[] array = new int[this.numeros.size()];
-            for (int i = 0; i < this.numeros.size(); i++) {
-                array[i] = this.numeros.get(i);
-            }
-            long tiempo1 = System.currentTimeMillis();
-            Forkjoin forkjoin= new Forkjoin(array);
-            ForkJoinPool fork = new ForkJoinPool();
-            fork.invoke(forkjoin);
-            //fork.
-            txtNumerosInsertados.setText("");
-            txtNumerosInsertados.setText(Arrays.toString(array));
-
-            //System.out.println(numeros);
-            long tiempo2 = System.currentTimeMillis()-tiempo1;
-            lblTiempo.setText("Tiempo Fork: "+tiempo2+" milisegundos");
+            this.buttonFork();
+        }else if(e.getSource()==btnLimpiar){
+            this.limpiar();
         }
+    }
+
+    private void buttonFork() {
+        int[] array = new int[this.numeros.size()];
+        //de array a arreglo
+        for (int i = 0; i < this.numeros.size(); i++) {
+            array[i] = this.numeros.get(i);
+        }
+        long tiempo1 = System.currentTimeMillis();
+        //inicializacion con el frework forkjoin
+        Forkjoin forkjoin= new Forkjoin(array);
+        ForkJoinPool fork = new ForkJoinPool();
+        fork.invoke(forkjoin);
+        //fork.
+        txtNumerosInsertados.setText("");
+        txtNumerosInsertados.setText(Arrays.toString(array));
+
+        //System.out.println(numeros);
+        long tiempo2 = System.currentTimeMillis()-tiempo1;
+        lblTiempoFork.setText("Tiempo Fork: "+tiempo2+" milisegundos");
+    }
+
+
+    private void generarNumeros() {
+        numeros.clear();
+        // Generar números aleatorios
+        int cantidadNumeros = Integer.parseInt(txtCantidadNumeros.getText());
+        StringBuilder numerosGenerados = new StringBuilder();
+        for (int i = 0; i < cantidadNumeros; i++) {
+            int numero = (int) (Math.random() * 100) + 1;
+            numerosGenerados.append(numero + ", ");
+            numeros.add(numero);
+        }
+        txtNumerosGenerados.setText(numerosGenerados.toString());
+    }
+
+    public void buttonMerge(){
+        long tiempo1 = System.currentTimeMillis();
+        // Insertar números generados
+        merge Merge = new merge();
+        ArrayList<Integer> resultado=Merge.merge(numeros);
+        txtNumerosInsertados.setText("");
+        for (int numero : resultado) {
+            txtNumerosInsertados.append(String.valueOf(numero) + ", ");
+        }
+        //System.out.println(numeros);
+        long tiempo2 = System.currentTimeMillis()-tiempo1;
+        lblTiempo.setText("Tiempo Merge: "+tiempo2+" milisegundos");
     }
 
     public static void main(String[] args) {

@@ -14,10 +14,11 @@ public class Forkjoin extends RecursiveAction {
 
     @Override
     protected void compute() {
+        //condicion de parp
         if (array.length <= 1) {
             return;
         }
-
+        //repartir arreglos
         int mid = array.length / 2;
         int[] izquierda = Arrays.copyOfRange(array, 0, mid);
         int[] derecha = Arrays.copyOfRange(array, mid, array.length);
@@ -26,12 +27,14 @@ public class Forkjoin extends RecursiveAction {
         Forkjoin derechaTask = new Forkjoin(derecha);
 
         invokeAll(izquierdaTask, derechaTask);
-
+        //hilos que se ejecutan
         izquierdaTask.join();
         derechaTask.join();
-
+        //acomodo
         merge(izquierda, derecha, array);
     }
+
+    //metodo merge
 
     private void merge(int[] izquierda, int[] derecha, int[] result) {
         int i = 0;
