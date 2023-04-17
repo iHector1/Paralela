@@ -3,7 +3,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.ForkJoinPool;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.*;
 import javax.swing.*;
 
 public class GeneradorNumeros extends JFrame implements ActionListener {
@@ -106,6 +108,42 @@ public class GeneradorNumeros extends JFrame implements ActionListener {
         this.txtNumerosGenerados.setText("");
         this.txtCantidadNumeros.setText("");
         this.txtNumerosInsertados.setText("");
+        this.lblTiempoService.setText("Tiempo Service:");
+        this.lblTiempoFork.setText("Tiempo Fork:");
+        this.lblTiempo.setText("Tiempo Merge:");
+
+    }
+    private void executorService(){
+        int[] array = new int[this.numeros.size()];
+        //de array a arreglo
+        for (int i = 0; i < this.numeros.size(); i++) {
+            array[i] = this.numeros.get(i);
+        }
+        long tiempo1 = System.currentTimeMillis();
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        Collection<Callable<int[]>> callables = new ArrayList<>();
+        int mitad = array.length/2;
+        int[] numerosService = array;
+        callables.add(()->{
+            return Execute.ordenar(Arrays.copyOfRange(array,0,mitad));
+        });
+        callables.add(()->{
+            return Execute.ordenar(Arrays.copyOfRange(array,mitad,array.length));
+        });
+        try {
+            List<Future<int[]>> futures = executorService.invokeAll(callables);
+            int[] first = (int[])((Future)futures.get(0)).get();
+            int[] second = (int[])((Future)futures.get(1)).get();
+            Execute.comArray(numerosService, first, second);
+        } catch (ExecutionException | InterruptedException var17) {
+            throw new RuntimeException(var17);
+        }
+        long tiempo2 = System.currentTimeMillis()-tiempo1;
+        lblTiempoService.setText("Tiempo Service: "+tiempo2+" milisegundos");
+        String result="";
+        for (int i=0;i<numerosService.length;i++)
+            result+=numerosService[i]+", ";
+        this.txtNumerosInsertados.setText(result);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -117,6 +155,8 @@ public class GeneradorNumeros extends JFrame implements ActionListener {
 
         }else if (e.getSource() == btnMergeNumerosFork) {
             this.buttonFork();
+        }else if(e.getSource()==btnMergeNumerosService){
+            this.executorService();
         }else if(e.getSource()==btnLimpiar){
             this.limpiar();
         }
@@ -170,8 +210,4 @@ public class GeneradorNumeros extends JFrame implements ActionListener {
         lblTiempo.setText("Tiempo Merge: "+tiempo2+" milisegundos");
     }
 
-    public static void main(String[] args) {
-        GeneradorNumeros ventana = new GeneradorNumeros();
-        ventana.setVisible(true);
-    }
 }

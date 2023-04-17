@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.concurrent.RecursiveTask;
 
 public class merge {
+    public  void holi(){
+        System.out.println("holi");
+    }
     public ArrayList<Integer> merge(ArrayList<Integer> lista){
         if(lista.size() <= 1){
             return  lista;
